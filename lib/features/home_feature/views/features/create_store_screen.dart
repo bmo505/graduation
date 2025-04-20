@@ -1,0 +1,183 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:graduation/features/home_feature/views/features/chat_view.dart';
+
+class CreateStoryScreen extends StatefulWidget {
+  const CreateStoryScreen({super.key});
+
+  @override
+  _CreateStoryScreenState createState() => _CreateStoryScreenState();
+}
+
+class _CreateStoryScreenState extends State<CreateStoryScreen> {
+  String selectedGPTVersion = '';
+  String selectedWritingStyle = '';
+
+  final List<String> writingStyles = [
+    'الدراما',
+    'الرومانسية',
+    'الفانتازيا',
+    'الخيال العلمي',
+    'المغامرات',
+    'الكوميديا',
+    'التاريخية',
+    'الرعب',
+    'الحركة',
+    'الدراما الاجتماعية',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.brown[800],
+        title: Text(
+          'إنشاء قصة جديدة',
+          style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      backgroundColor: const Color(0xFFF1E6D2),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'اختر النسخة المطلوبة لإنشاء القصة:',
+              style: GoogleFonts.tajawal(fontSize: 20, color: Colors.brown[800]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildGPTButton('GPT 3.5', Colors.brown[400]),
+                const SizedBox(width: 16),
+                _buildGPTButton('GPT 4', Colors.brown[600]),
+                const SizedBox(width: 16),
+                _buildGPTButton('GPT 4.0', Colors.brown[800]),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            if (selectedGPTVersion.isNotEmpty) ...[
+              Text(
+                'اختر نمط الكتابة:',
+                style: GoogleFonts.tajawal(fontSize: 18, color: Colors.brown[700]),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+
+              // استخدام GridView لعرض الأزرار بشكل منظم
+              GridView.builder(
+                shrinkWrap: true, // لضبط الحجم تلقائيًا حسب المحتوى
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, // عدد الأعمدة
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: writingStyles.length,
+                itemBuilder: (context, index) {
+                  return _buildWritingStyleButton(writingStyles[index]);
+                },
+              ),
+            ],
+            const SizedBox(height: 32),
+
+            if (selectedWritingStyle.isNotEmpty && selectedGPTVersion.isNotEmpty) ...[
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                          'تم اختيار النسخة والنمط',
+                          style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.brown[800]),
+                        ),
+                        content: Text(
+                          'سيتم إنشاء القصة باستخدام النسخة $selectedGPTVersion والنمط $selectedWritingStyle.',
+                          style: GoogleFonts.tajawal(fontSize: 16, color: Colors.brown[600]),
+                          textAlign: TextAlign.center,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChatPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'موافق',
+                              style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.brown[800]),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown[800],
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+                ),
+                child: Text(
+                  'إنشاء القصة',
+                  style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGPTButton(String title, Color? color) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedGPTVersion = title;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+      child: Text(
+        title,
+        style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildWritingStyleButton(String style) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedWritingStyle = style;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.brown[500],
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        minimumSize: const Size(120, 50), // توحيد الحجم
+      ),
+      child: Text(
+        style,
+        style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    );
+  }
+}

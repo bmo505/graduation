@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.brown[800],
+        title: Text(
+          'الإعدادات',
+          style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      backgroundColor: const Color(0xFFF1E6D2),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            _buildSettingsOption(
+                context,
+                'اللغة',
+                Icons.language,
+                    () {
+                  // تنفيذ دالة تغيير اللغة
+                }
+            ),
+            _buildSettingsOption(
+                context,
+                'الإشعارات',
+                Icons.notifications,
+                    () {
+                  // تنفيذ دالة الإشعارات
+                }
+            ),
+            _buildSettingsOption(
+                context,
+                'المظهر',
+                Icons.brightness_6,
+                    () {
+                  // تنفيذ دالة التبديل بين الوضع الداكن والفاتح
+                }
+            ),
+            _buildSettingsOption(
+                context,
+                'حسابي',
+                Icons.account_circle,
+                    () {
+                  // تنفيذ دالة إعدادات الحساب
+                }
+            ),
+            _buildSettingsOption(
+                context,
+                'حول التطبيق',
+                Icons.info,
+                    () {
+                  // تنفيذ دالة عرض معلومات التطبيق
+                }
+            ),
+            _buildSettingsOption(
+                context,
+                'تسجيل الخروج',
+                Icons.exit_to_app,
+                    () {
+                  // تنفيذ دالة تسجيل الخروج
+                }
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // بناء عنصر قائمة الإعدادات
+  Widget _buildSettingsOption(
+      BuildContext context,
+      String title,
+      IconData icon,
+      VoidCallback onTap,
+      ) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.brown[800]),
+      title: Text(
+        title,
+        style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      trailing: Icon(Icons.arrow_forward_ios, color: Colors.brown[800]),
+      onTap: onTap,
+    );
+  }
+}

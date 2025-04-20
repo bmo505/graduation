@@ -1,0 +1,218 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:graduation/features/home_feature/views/features/challenge_screen.dart';
+import 'package:graduation/features/home_feature/views/features/community_screen.dart';
+import 'package:graduation/features/home_feature/views/features/continue_story_screen.dart';
+import 'package:graduation/features/home_feature/views/features/create_store_screen.dart';
+import 'package:graduation/features/home_feature/views/features/savedstory_screen.dart';
+import 'package:graduation/features/home_feature/views/settings/settings_screen.dart';
+import 'package:graduation/features/home_feature/views/features/suggested_stories.dart';
+import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    MainContentScreen(),
+    const SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: WaterDropNavBar(
+        waterDropColor: Colors.yellow[10]!,
+        backgroundColor: Colors.brown[800]!,
+        onItemSelected: _onItemTapped,
+        selectedIndex: _selectedIndex,
+        barItems: [
+          BarItem(
+            filledIcon: Icons.home,
+            outlinedIcon: Icons.home_outlined,
+          ),
+          BarItem(
+            filledIcon: Icons.settings,
+            outlinedIcon: Icons.settings_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MainContentScreen extends StatelessWidget {
+  final List<String> imageUrls = [
+    'https://img.freepik.com/free-photo/books-imagination-still-life_23-2149082211.jpg?ga=GA1.1.1670308824.1725626718&semt=ais_hybrid',
+    'https://img.freepik.com/premium-photo/bright-red-background-white-pencil-white-paper-clips-white-notebook-with-text-be-continued_380694-9576.jpg?w=740',
+    'https://img.freepik.com/premium-photo/torah-passover-is-one-most-famous-jewish-holidays_10221-20635.jpg?w=826',
+    'https://img.freepik.com/premium-vector/man-is-looking-book-with-magnifying-glass_9206-23540.jpg?w=740',
+    'https://img.freepik.com/free-photo/challenge-goal-target-trial-skill-test-trophy-concept_53876-127483.jpg?ga=GA1.1.1670308824.1725626718&semt=ais_hybrid',
+    'https://img.freepik.com/free-vector/abstract-creative-gamification-illustration_23-2149221122.jpg?ga=GA1.1.1670308824.1725626718&semt=ais_hybrid',
+    // 'https://img.freepik.com/free-vector/gear-design-abstract-background-gears-cogwheels-seamless-pattern-industrial-technology-mechanical-engineering_1284-53278.jpg?t=st=1731148563~exp=1731152163~hmac=d94905c0ac63a43a7c2800dc63edbc5be892b5416f4963f855b7a651026a55d6&w=740'
+  ];
+
+  final List<String> titles = [
+    'إنشاء قصة جديدة',
+    'استكمال قصة',
+    'القصص المحفوظة',
+    'القصص المقترحة',
+    'تحديات الكتابة',
+    'مجتمع القصص التنافسي',
+    // 'الاعدادات',
+  ];
+
+  final List<Function(BuildContext)> onTapActions = [
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateStoryScreen()),
+      );
+    },
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ContinueStoryScreen()),
+      );
+    },
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SavedStoriesScreen()),
+      );
+    },
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SuggestedStoriesScreen()),
+      );
+    },
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const WritingChallengesScreen()),
+      );
+    },
+        (BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const StoryCommunityScreen()),
+      );
+    },
+    //     (BuildContext context) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    //   );
+    // },
+  ];
+
+  MainContentScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.brown[800],
+        title: Text(
+          'حكاوي',
+          style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications, color: Colors.yellow[600]),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFFF1E6D2),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          itemCount: titles.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+          ),
+          itemBuilder: (context, index) {
+            return _buildCategoryCard(
+              context,
+              imageUrls[index],
+              titles[index],
+              Colors.brown[400],
+              onTapActions[index],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(
+      BuildContext context,
+      String imageUrl,
+      String title,
+      Color? color,
+      Function(BuildContext) onTap,
+      ) {
+    return GestureDetector(
+      onTap: () => onTap(context),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.brown, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.brown.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                style: GoogleFonts.tajawal(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
