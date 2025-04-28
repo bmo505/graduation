@@ -54,7 +54,7 @@ class GraduationProject extends StatelessWidget {
     nextScreen: const MainScreen(),
     splashTransition: SplashTransition.fadeTransition,
     duration: 3000,
-    backgroundColor: Colors.brown,
+    backgroundColor: const Color(0xFF263238),
     ),);
   }
 }

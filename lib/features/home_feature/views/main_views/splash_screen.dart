@@ -62,7 +62,7 @@ class _SplashImageState extends State<SplashImage>
             child: FractionalTranslation(
               translation: _shakeAnimation.value,
               child: Image.asset(
-                'assets/Logo_maker_project__1_-removebg-preview.png',
+                'assets/5800700504500717591-removebg-preview.png',
                 fit: BoxFit.contain,
               ),
             ),
