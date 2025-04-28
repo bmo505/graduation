@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:graduation/features/auth/presentation/login/login.dart';
 import 'package:graduation/features/home_feature/views/main_views/home_view.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
+
+import '../../manager/user.dart';
+
+// Simulated User model
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,9 +24,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  String? _userType;
   bool _passwordVisible = false;
 
   Future<void> _selectBirthDate(BuildContext context) async {
@@ -32,11 +37,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            primaryColor: Colors.brown[800],
-            buttonTheme:
-                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
-            colorScheme:
-                ColorScheme.fromSwatch().copyWith(secondary: Colors.brown[800]),
+            primaryColor: Colors.blueGrey[900],
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              secondary: Colors.amber[200],
+              primary: Colors.blueGrey[900],
+            ),
+            dialogBackgroundColor: Colors.blueGrey[800],
+            textTheme: TextTheme(
+              bodyMedium: TextStyle(
+                fontFamily: GoogleFonts.tajawal().fontFamily,
+                fontFamilyFallback: const ['Noto Naskh Arabic'],
+                color: Colors.white,
+              ),
+            ),
           ),
           child: child!,
         );
@@ -50,278 +64,481 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void _registerUser() {
+    if (_formKey.currentState!.validate()) {
+      // Simulate saving user data
+      final user = User(
+        name: _nameController.text,
+        email: _emailController.text,
+        birthDate: _birthDateController.text,
+        userType: _userType!, id: '',
+      );
+
+      // Placeholder for API call
+      // await http.post(
+      //   Uri.parse('https://api.x.ai/auth/register'),
+      //   headers: {'Content-Type': 'application/json'},
+      //   body: jsonEncode({
+      //     'name': user.name,
+      //     'email': user.email,
+      //     'birthDate': user.birthDate,
+      //     'userType': user.userType,
+      //     'password': _passwordController.text,
+      //   }),
+      // );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'تَمَّ إِنْشَاءُ الْحِسَابِ بِنَجَاحٍ!',
+            style: TextStyle(
+              fontFamily: GoogleFonts.tajawal().fontFamily,
+              fontFamilyFallback: const ['Noto Naskh Arabic'],
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.blueGrey[900],
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(user: user), // Pass user to HomeScreen
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _birthDateController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1E6D2),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
-          'أهلاً بك في حكاوي',
-          style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.brown[800],
-        centerTitle: true,
+        backgroundColor: Colors.blueGrey[900]!.withOpacity(0.5),
         elevation: 0,
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.blueGrey[200]!.withOpacity(0.3), width: 1),
+                ),
+              ),
+            ),
+          ),
+        ),
+        title: ZoomIn(
+          child: Text(
+            'أَهْلًا بِكَ فِي حِكَايَاتُ رَاوٍ',
+            style: TextStyle(
+              fontFamily: GoogleFonts.tajawal().fontFamily,
+              fontFamilyFallback: const ['Noto Naskh Arabic'],
+              color: Colors.amber[200],
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'إنشاء حساب جديد',
-                    style: GoogleFonts.tajawal(
-                      color: Colors.brown[800],
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'الاسم',
-                      labelStyle: GoogleFonts.tajawal(color: Colors.brown[800]),
-                      prefixIcon: Icon(Icons.person, color: Colors.brown[800]),
-                      filled: true,
-                      fillColor: Colors.yellow[40],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.brown),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال اسمك';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'البريد الإلكتروني',
-                      labelStyle: GoogleFonts.tajawal(color: Colors.brown[800]),
-                      prefixIcon: Icon(Icons.alternate_email_sharp,
-                          color: Colors.brown[800]),
-                      filled: true,
-                      fillColor: Colors.yellow[40],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.brown),
-                      ),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال بريدك الإلكتروني';
-                      }
-                      if (!RegExp(
-                              r'^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,4}$')
-                          .hasMatch(value)) {
-                        return 'الرجاء إدخال بريد إلكتروني صالح';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _birthDateController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(
-                          10), // Allowing only dd/MM/yyyy
-                      _BirthDateFormatter(),
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'تاريخ الميلاد',
-                      labelStyle: GoogleFonts.tajawal(color: Colors.brown[800]),
-                      prefixIcon:
-                          Icon(Icons.calendar_today, color: Colors.brown[800]),
-                      filled: true,
-                      fillColor: Colors.yellow[40],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.brown),
-                      ),
-                      hintText: '01/01/2000',
-                      hintStyle: GoogleFonts.tajawal(color: Colors.brown[400]),
-                      suffixIcon: IconButton(
-                        icon: const Icon(
-                          Icons.calendar_today,
-                          color: Colors.brown,
-                        ),
-                        onPressed: () => _selectBirthDate(context),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال تاريخ ميلادك';
-                      }
-                      if (!RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
-                        return 'يجب أن يكون التاريخ بصيغة dd/MM/yyyy';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      labelText: 'كلمة السر',
-                      labelStyle: GoogleFonts.tajawal(color: Colors.brown[800]),
-                      prefixIcon: Icon(Icons.lock, color: Colors.brown[800]),
-                      filled: true,
-                      fillColor: Colors.yellow[40],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.brown),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.brown[800],
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء إدخال كلمة السر';
-                      }
-                      if (value.length < 8) {
-                        return 'كلمة السر يجب أن تحتوي على 8 أحرف على الأقل';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      labelText: 'تأكيد كلمة السر',
-                      labelStyle: GoogleFonts.tajawal(color: Colors.brown[800]),
-                      prefixIcon: Icon(Icons.lock, color: Colors.brown[800]),
-                      filled: true,
-                      fillColor: Colors.yellow[40],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.brown),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء تأكيد كلمة السر';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'كلمة السر غير متطابقة';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('جاري إنشاء الحساب'),
-                              duration: Duration(seconds: 2),
-                              backgroundColor: Colors.brown,
-                              behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const HomeScreen()),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown[800],
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'إنشاء حساب',
-                      style: GoogleFonts.tajawal(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blueGrey[900]!, Colors.blue[200]!],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'إذا كان لديك حساب بالفعل؟',
-                        style: GoogleFonts.tajawal(
-                          color: Colors.brown[800],
-                          fontSize: 16,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()),
-                          );
-                        },
+                      FadeInUp(
                         child: Text(
-                          'قم بتسجيل الدخول',
-                          style: GoogleFonts.tajawal(
-                            color: Colors.brown[800],
-                            fontSize: 16,
+                          'إِنْشَاءُ حِسَابٍ جَدِيدٍ',
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.amber[200],
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 200),
+                        child: Text(
+                          'انْضَمَّ لِتَحْفَظَ قِصَصَكَ وَتُشَارِكَهَا!',
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.blueGrey[100],
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 400),
+                        child: TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'الإِسْمُ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.person, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرَّجَاءُ إِدْخَالُ اسْمِكَ';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 600),
+                        child: TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'الْبَرِيدُ الإِلِكْتُرُونِيُّ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.alternate_email_sharp, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرَّجَاءُ إِدْخَالُ بَرِيدِكَ الإِلِكْتُرُونِيِّ';
+                            }
+                            if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$').hasMatch(value)) {
+                              return 'الرَّجَاءُ إِدْخَالُ بَرِيدٍ إِلِكْتُرُونِيٍّ صَحِيحٍ';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 800),
+                        child: TextFormField(
+                          controller: _birthDateController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                            _BirthDateFormatter(),
+                          ],
+                          decoration: InputDecoration(
+                            labelText: 'تَارِيخُ الْمِيلَادِ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.calendar_today, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                            hintText: '01/01/2000',
+                            hintStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.calendar_today, color: Colors.amber[200]),
+                              onPressed: () => _selectBirthDate(context),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرَّجَاءُ إِدْخَالُ تَارِيخِ مِيلَادِكَ';
+                            }
+                            if (!RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
+                              return 'يَجِبُ أَنْ يَكُونَ التَّارِيخُ بِصِيغَةِ dd/MM/yyyy';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 1000),
+                        child: DropdownButtonFormField<String>(
+                          value: _userType,
+                          decoration: InputDecoration(
+                            labelText: 'نَوْعُ الْمُسْتَخْدِمِ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.person_pin, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          dropdownColor: Colors.blueGrey[800],
+                          items: ['قَارِئٌ', 'كَاتِبٌ'].map((String type) {
+                            return DropdownMenuItem<String>(
+                              value: type,
+                              child: Text(type),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _userType = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'الرَّجَاءُ اخْتِيَارُ نَوْعِ الْمُسْتَخْدِمِ';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 1200),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_passwordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'كَلِمَةُ الْمُرُورِ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.lock, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.amber[200],
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرَّجَاءُ إِدْخَالُ كَلِمَةِ الْمُرُورِ';
+                            }
+                            if (value.length < 8) {
+                              return 'كَلِمَةُ الْمُرُورِ يَجِبُ أَنْ تَحْتَوِي عَلَى 8 أَحْرُفٍ عَلَى الْأَقَلِّ';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 1400),
+                        child: TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_passwordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'تَأْكِيدُ كَلِمَةِ الْمُرُورِ',
+                            labelStyle: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              color: Colors.blueGrey[300],
+                            ),
+                            prefixIcon: Icon(Icons.lock, color: Colors.amber[200]),
+                            filled: true,
+                            fillColor: Colors.blueGrey[900]!.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(color: Colors.amber[200]!),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.tajawal().fontFamily,
+                            fontFamilyFallback: const ['Noto Naskh Arabic'],
+                            color: Colors.white,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرَّجَاءُ تَأْكِيدُ كَلِمَةِ الْمُرُورِ';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'كَلِمَةُ الْمُرُورِ غَيْرُ مُتَطَابِقَةٍ';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      ElasticIn(
+                        child: ElevatedButton(
+                          onPressed: _registerUser,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber[200],
+                            foregroundColor: Colors.blueGrey[900],
+                            minimumSize: const Size(double.infinity, 55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                          ),
+                          child: Text(
+                            'إِنْشَاءُ حِسَابٍ',
+                            style: TextStyle(
+                              fontFamily: GoogleFonts.tajawal().fontFamily,
+                              fontFamilyFallback: const ['Noto Naskh Arabic'],
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      FadeInUp(
+                        delay: const Duration(milliseconds: 1600),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'إِذَا كَانَ لَدَيْكَ حِسَابٌ بِالْفِعْلِ؟',
+                              style: TextStyle(
+                                fontFamily: GoogleFonts.tajawal().fontFamily,
+                                fontFamilyFallback: const ['Noto Naskh Arabic'],
+                                color: Colors.blueGrey[100],
+                                fontSize: 16,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                );
+                              },
+                              child: Text(
+                                'قُمْ بِتَسْجِيلِ الدُّخُولِ',
+                                style: TextStyle(
+                                  fontFamily: GoogleFonts.tajawal().fontFamily,
+                                  fontFamilyFallback: const ['Noto Naskh Arabic'],
+                                  color: Colors.amber[200],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -334,21 +551,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 class _BirthDateFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
     String newText = newValue.text.replaceAll(RegExp(r'\D'), '');
     if (newText.length > 2 && newText.length <= 4) {
       newText = '${newText.substring(0, 2)}/${newText.substring(2)}';
     } else if (newText.length > 4) {
-      newText =
-          '${newText.substring(0, 2)}/${newText.substring(2, 4)}/${newText.substring(4)}';
+      newText = '${newText.substring(0, 2)}/${newText.substring(2, 4)}/${newText.substring(4)}';
     }
     return newText.length <= 10
         ? TextEditingValue(
-            text: newText,
-            selection: TextSelection.collapsed(offset: newText.length),
-          )
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    )
         : oldValue;
   }
 }
